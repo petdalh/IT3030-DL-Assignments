@@ -115,7 +115,7 @@ class ImageGenerator:
 
 
 # Example usage
-n = 20  # Choose the image size (n x n)
+n = 40  # Choose the image size (n x n)
 noise = 0.05  # Adjust the noise parameter as needed
 generator = ImageGenerator(n, noise)
 

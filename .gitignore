@@ -1,0 +1,87 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Test files
+.hypothesis/
+.pytest_cache/
+*.py[co]
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+bin/
+Scripts/
+Include/
+Lib/
+lib/python*/
+pyvenv.cfg
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# PyCharm project settings
+.idea/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# MacOS directory attributes
+.DS_Store
+
+# dotenv environment variables file
+.env
+*.pem
+*.key
+
+# User-specific files
+config/*  # If these contain sensitive or personal information, exclude them.
+!config/example.yml  # Include an example config file if you want it tracked.
+
+# Log files
+*.log
+
+# Other files to ignore
+# Add here any other file types you want to ignore
+
+# User uploaded files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.csv
+*.json
+*.md
+*.txt

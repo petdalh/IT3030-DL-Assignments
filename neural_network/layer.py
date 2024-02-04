@@ -1,6 +1,6 @@
 import numpy as np
-from activation_functions import Softmax
-from regularization import L1Regularizer
+from .activation_functions import Softmax
+from .regularization import L1Regularizer
 
 
 class Layer:
