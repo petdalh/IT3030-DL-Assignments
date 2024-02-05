@@ -1,0 +1,17 @@
+globals:
+  learning_rate: 0.01
+  loss_function: cross_entropy
+
+layers:
+  - input_size: 784  # Assuming input layer for MNIST (28x28 images flattened)
+    output_size: 128
+    activation: relu
+
+  - input_size: 128
+    output_size: 64
+    activation: relu
+
+  - input_size: 64
+    output_size: 10
+    activation: softmax
+    regularizer: L1

@@ -42,7 +42,6 @@ ENV/
 env/
 env.bak/
 bin/
-Scripts/
 Include/
 Lib/
 lib/python*/
