@@ -1,17 +1,19 @@
 globals:
-  learning_rate: 0.01
+  learning_rate: 0.08
+  epochs: 50
+  batch_size: 12
   loss_function: cross_entropy
 
 layers:
-  - input_size: 784  # Assuming input layer for MNIST (28x28 images flattened)
+  - input_size: 1600
+    output_size: 256
+    activation: relu
+  - input_size: 256
     output_size: 128
     activation: relu
-
   - input_size: 128
     output_size: 64
     activation: relu
-
   - input_size: 64
-    output_size: 10
+    output_size: 4
     activation: softmax
-    regularizer: L1

@@ -15,7 +15,8 @@ class NeuralNetwork:
 
     def forward(self, inputs):
         for layer in self.layers:
-            inputs = layer.forward_pass(inputs)  # Use the output of the forward pass
+            inputs = layer.forward_pass(
+                inputs)  # Use the output of the forward pass
         return inputs
 
     def backward(self, dvalues):
@@ -25,38 +26,58 @@ class NeuralNetwork:
 
     def update_params(self, learning_rate):
         for layer in self.layers:
-            layer.weights -= learning_rate * layer.dweights
-            layer.biases -= learning_rate * layer.dbiases
-    
-    def fit(self, X_train, y_train, epochs, learning_rate, batch_size=None):
+            layer.update_params(learning_rate)
+
+    def fit(self,
+            X_train,
+            y_train,
+            epochs,
+            learning_rate,
+            batch_size=None,
+            verbose=False):
         n_samples = X_train.shape[0]
         if batch_size is None:
-            batch_size = n_samples  # No batching, use full dataset
-        
+            batch_size = n_samples  # Use full dataset if no batch size specified
+
         for epoch in range(epochs):
-            # Shuffle your training data here if desired
             permutation = np.random.permutation(n_samples)
             X_train_shuffled = X_train[permutation]
             y_train_shuffled = y_train[permutation]
-            
-            for i in range(0, n_samples, batch_size):
-                X_batch = X_train_shuffled[i:i+batch_size]
-                y_batch = y_train_shuffled[i:i+batch_size]
-                # Forward pass
-                output = self.forward(X_batch)
-                # Compute loss and its gradient
-                loss, dloss = self.compute_loss_and_gradient(output, y_batch)
-                # Backward pass
-                self.backward(dloss)
-                # Update parameters
-                self.update_params(learning_rate)
-            
-            # Optional: Print epoch number and loss here
-            print(f"Epoch {epoch + 1}, Loss: {loss}")
 
+            epoch_losses = []  # To track loss over the epoch
+            epoch_gradients_norm = []  # To track gradients norm over the epoch
+            epoch_weights_norm = []  # To track weights norm over the epoch
+
+            for i in range(0, n_samples, batch_size):
+                X_batch = X_train_shuffled[i:i + batch_size]
+                y_batch = y_train_shuffled[i:i + batch_size]
+                output = self.forward(X_batch)
+                loss, dloss = self.compute_loss_and_gradient(output, y_batch)
+                self.backward(dloss)
+                self.update_params(learning_rate)
+
+                epoch_losses.append(loss)
+                # Aggregate gradients and weights norm for this batch
+                batch_gradients_norm = sum(
+                    np.linalg.norm(layer.dweights) for layer in self.layers)
+                batch_weights_norm = sum(
+                    np.linalg.norm(layer.weights) for layer in self.layers)
+                epoch_gradients_norm.append(batch_gradients_norm)
+                epoch_weights_norm.append(batch_weights_norm)
+
+            # Compute the average loss, gradients norm, and weights norm for the epoch
+            avg_epoch_loss = np.mean(epoch_losses)
+            avg_gradients_norm = np.mean(epoch_gradients_norm)
+            avg_weights_norm = np.mean(epoch_weights_norm)
+
+            if verbose:
+                print(
+                    f"Epoch {epoch + 1}, Loss: {avg_epoch_loss}, Avg Gradients Norm: {avg_gradients_norm}, Avg Weights Norm: {avg_weights_norm}"
+                )
+
+            # Optionally, implement additional logic to track and print accuracy or other metrics
 
     def compute_loss_and_gradient(self, output, y_true):
         loss = self.loss_function.compute_loss(output, y_true)
         dloss = self.loss_function.compute_gradient(output, y_true)
         return loss, dloss
-

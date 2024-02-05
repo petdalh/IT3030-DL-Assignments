@@ -32,7 +32,9 @@ class Layer:
 
         # Gradient on parameters
         self.dweights = np.dot(self.inputs.T, self.dvalues)
-        self.dbiases = np.sum(self.dvalues, axis=0, keepdims=True).squeeze()  # This will also give a 1D array
+        self.dbiases = np.sum(
+            self.dvalues, axis=0,
+            keepdims=True).squeeze()  # This will also give a 1D array
 
         # If there is a regularizer, compute the gradient of the regularizer
         if self.regularizer:
@@ -41,3 +43,7 @@ class Layer:
         # Gradient on the input values for next layer in backpropagation
         self.dinputs = np.dot(dvalues, self.weights.T)
         return self.dinputs
+
+    def update_params(self, learning_rate):
+        self.weights -= learning_rate * self.dweights
+        self.biases -= learning_rate * self.dbiases
