@@ -1,5 +1,6 @@
 from .layer import Layer
 from .loss_functions import CrossEntropyLoss, MSELoss
+import numpy as np
 
 
 class NeuralNetwork:
@@ -14,8 +15,7 @@ class NeuralNetwork:
 
     def forward(self, inputs):
         for layer in self.layers:
-            layer.forward_pass(inputs)
-            inputs = layer.output
+            inputs = layer.forward_pass(inputs)  # Use the output of the forward pass
         return inputs
 
     def backward(self, dvalues):

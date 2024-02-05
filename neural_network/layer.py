@@ -1,5 +1,5 @@
 import numpy as np
-from .activation_functions import Softmax
+from .activation_functions import Softmax, ReLU, ActivationFunction
 from .regularization import L1Regularizer
 
 
@@ -32,7 +32,7 @@ class Layer:
 
         # Gradient on parameters
         self.dweights = np.dot(self.inputs.T, self.dvalues)
-        self.dbiases = np.sum(self.dvalues, axis=0, keepdims=True)
+        self.dbiases = np.sum(self.dvalues, axis=0, keepdims=True).squeeze()  # This will also give a 1D array
 
         # If there is a regularizer, compute the gradient of the regularizer
         if self.regularizer:
