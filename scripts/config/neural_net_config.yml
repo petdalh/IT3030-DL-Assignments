@@ -8,12 +8,24 @@ layers:
   - input_size: 1600
     output_size: 256
     activation: relu
+    regularizer:
+      type: L1
+      rate: 0.001
   - input_size: 256
     output_size: 128
     activation: relu
+    regularizer:
+      type: L1
+      rate: 0.001
   - input_size: 128
     output_size: 64
     activation: relu
+    regularizer:
+      type: L1
+      rate: 0.001
   - input_size: 64
     output_size: 4
     activation: softmax
+    regularizer:
+      type: L1
+      rate: 0.001
