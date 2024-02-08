@@ -24,21 +24,16 @@ This project implements a simple neural network framework from scratch using Pyt
 
 ## Components
 
-- `neural_network.py`: Implements the neural network, layers, and training process.
+- `neural_network.py`: Implements the neural network and training process.
+- `layer.py`: Implements the layer used in the network
 - `activation_functions.py`: Contains activation function classes.
 - `loss_functions.py`: Defines loss function classes for model evaluation.
 - `regularization.py`: Includes regularization classes.
-- `image_generator.py`: Script for generating synthetic image datasets.
+- `generator.py`: Script for generating synthetic image datasets.
 - `config/neural_net_config.yml`: Configuration file for setting up the neural network and dataset.
 
 ## Customization
 
 You can customize the neural network by adjusting the configuration in `neural_net_config.yml`. Available options include layer sizes, activations, regularization, and training parameters like learning rate and epochs.
 
-## Contributing
 
-Contributions to this project are welcome. Please open an issue to discuss proposed changes or improvements before making a pull request.
-
-## License
-
-This project is open-sourced under the MIT License. See the LICENSE file for more details.
