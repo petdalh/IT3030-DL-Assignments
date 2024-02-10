@@ -27,11 +27,16 @@ class Layer:
         Computes backward pass of the layer
         """
 
-        # Apply derivative of the activation function
-        self.dvalues = dvalues * self.activation.derivative(self.output)
+        # Jacobian matrix for the activation function
+        dN_dout = self.activation.derivative(self.output)
 
-        # Gradient on parameters
+        # Apply derivative of the activation function
+        self.dvalues = dvalues * dN_dout
+
+        # Gradient on weights (dM/dW) and biases
+        # dL/dW = dL/dN (transposed input matrix)
         self.dweights = np.dot(self.inputs.T, self.dvalues)
+
         self.dbiases = np.sum(
             self.dvalues, axis=0,
             keepdims=True).squeeze()  # This will also give a 1D array

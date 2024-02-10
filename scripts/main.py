@@ -92,27 +92,44 @@ def create_network_from_config(config):
 
     return network
 
+def create_dataset_from_config(config):
+    dataset_type = config['dataset']['type']
+    dataset_params = config['dataset']['params']
+    
+    if dataset_type == 'image_generator':
+        n = dataset_params['n']
+        noise = dataset_params['noise']
+        num_images = dataset_params['num_images']
+        width_range = dataset_params['width_range']
+        height_range = dataset_params['height_range']
+        train_ratio = dataset_params['train_ratio']
+        val_ratio = dataset_params['val_ratio']
+        
+        generator = ImageGenerator(n, noise)
+        train_set, val_set, test_set = generator.generate_sets(
+            num_images=num_images,
+            width_range=width_range,
+            height_range=height_range,
+            train_ratio=train_ratio,
+            val_ratio=val_ratio
+        )
+        
+        return train_set, val_set, test_set
+    else:
+        raise ValueError(f"Unsupported dataset type: {dataset_type}")
+
 
 def main(config_path):
     # Load the configuration
     config = load_config(config_path)
-
+    n = config['dataset']['params']['n']
     # Create the neural network
     network = create_network_from_config(config)
 
     # Set up the image generator
-    n = 40
-    noise = 0.01
-    generator = ImageGenerator(n, noise)
-
-    # Generate the datasets
-    train_set, val_set, test_set = generator.generate_sets(num_images=1500,
-                                                           width_range=(10,
-                                                                        20),
-                                                           height_range=(10,
-                                                                         20),
-                                                           train_ratio=0.7,
-                                                           val_ratio=0.2)
+    network = create_network_from_config(config)
+    
+    train_set, val_set, test_set = create_dataset_from_config(config)
 
     # Preprocessing
     X_train, train_labels = preprocess_images_and_labels(
@@ -134,6 +151,8 @@ def main(config_path):
                 learning_rate=config['globals']['learning_rate'],
                 batch_size=config['globals']['batch_size'],
                 verbose=True)
+    
+    network.plot_training_progress()
 
     # Predict and plot
     test_predictions = predict(network, X_test)

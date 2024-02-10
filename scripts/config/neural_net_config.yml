@@ -1,6 +1,6 @@
 globals:
   learning_rate: 0.08
-  epochs: 50
+  epochs: 40
   batch_size: 12
   loss_function: cross_entropy
 
@@ -29,3 +29,14 @@ layers:
     regularizer:
       type: L1
       rate: 0.001
+
+dataset:
+  type: image_generator
+  params:
+    n: 40
+    noise: 0.01
+    num_images: 3000
+    width_range: [10, 20]
+    height_range: [10, 20]
+    train_ratio: 0.7
+    val_ratio: 0.2

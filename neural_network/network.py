@@ -1,6 +1,7 @@
 from .layer import Layer
 from .loss_functions import CrossEntropyLoss, MSELoss
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class NeuralNetwork:
@@ -8,6 +9,9 @@ class NeuralNetwork:
     def __init__(self, loss_function):
         self.layers = []
         self.loss_function = loss_function
+        self.losses = []
+        self.gradients_norm = []
+        self.weights_norm = []
 
     def add_layer(self, input_size, outp, activation="none", regularizer=None):
         layer = Layer(input_size, outp, activation)
@@ -74,8 +78,19 @@ class NeuralNetwork:
                 print(
                     f"Epoch {epoch + 1}, Loss: {avg_epoch_loss}, Avg Gradients Norm: {avg_gradients_norm}, Avg Weights Norm: {avg_weights_norm}"
                 )
+                #store the loss, gradients norm, and weights norm for this epoch
+                self.losses.append(avg_epoch_loss)
+                self.gradients_norm.append(avg_gradients_norm)
+                self.weights_norm.append(avg_weights_norm)
 
-            # Optionally, implement additional logic to track and print accuracy or other metrics
+    def plot_training_progress(self):
+        import matplotlib.pyplot as plt
+        plt.plot(self.losses, label="Loss")
+        plt.plot(self.gradients_norm, label="Gradients Norm")
+        plt.plot(self.weights_norm, label="Weights Norm")
+        plt.xlabel("Epochs")
+        plt.legend()
+        plt.show()
 
     def compute_loss_and_gradient(self, output, y_true):
         loss = self.loss_function.compute_loss(output, y_true)
