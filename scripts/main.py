@@ -8,8 +8,8 @@ sys.path.append(parent_dir)
 
 import numpy as np
 from neural_network import NeuralNetwork
-from neural_network import ReLU, Softmax
-from neural_network import L1Regularizer
+from neural_network import ReLU, Softmax, Linear, Sigmoid, Tanh
+from neural_network import L1Regularizer, L2Regularizer
 from neural_network import MSELoss, CrossEntropyLoss
 from generator import ImageGenerator
 import matplotlib.pyplot as plt
@@ -61,16 +61,22 @@ def load_config(yaml_file_path):
 
 
 def create_network_from_config(config):
-    activation_map = {'relu': ReLU, 'softmax': Softmax}
+    activation_map = {
+        'relu': ReLU,
+        'softmax': Softmax,
+        'linear': Linear,
+        'sigmoid': Sigmoid,
+        'tanh': Tanh
+    }
 
     loss_function_map = {
         'cross_entropy': CrossEntropyLoss,
-        # Add other loss functions as needed
+        'mse': MSELoss,
     }
 
     regularizer_map = {
         'L1': L1Regularizer,
-        # Add other regularizers as needed
+        'L2': L2Regularizer,
     }
 
     loss_function = loss_function_map[config['globals']['loss_function']]()
@@ -92,10 +98,11 @@ def create_network_from_config(config):
 
     return network
 
+
 def create_dataset_from_config(config):
     dataset_type = config['dataset']['type']
     dataset_params = config['dataset']['params']
-    
+
     if dataset_type == 'image_generator':
         n = dataset_params['n']
         noise = dataset_params['noise']
@@ -104,16 +111,15 @@ def create_dataset_from_config(config):
         height_range = dataset_params['height_range']
         train_ratio = dataset_params['train_ratio']
         val_ratio = dataset_params['val_ratio']
-        
+
         generator = ImageGenerator(n, noise)
         train_set, val_set, test_set = generator.generate_sets(
             num_images=num_images,
             width_range=width_range,
             height_range=height_range,
             train_ratio=train_ratio,
-            val_ratio=val_ratio
-        )
-        
+            val_ratio=val_ratio)
+
         return train_set, val_set, test_set
     else:
         raise ValueError(f"Unsupported dataset type: {dataset_type}")
@@ -123,38 +129,39 @@ def main(config_path):
     # Load the configuration
     config = load_config(config_path)
     n = config['dataset']['params']['n']
-    # Create the neural network
+
+    # Create the neural network from the configuration
     network = create_network_from_config(config)
 
-    # Set up the image generator
-    network = create_network_from_config(config)
-    
+    # Generate the dataset based on the configuration
     train_set, val_set, test_set = create_dataset_from_config(config)
 
-    # Preprocessing
-    X_train, train_labels = preprocess_images_and_labels(
-        train_set)  # Corrected variable name from y_train to train_labels
-    X_test, test_labels = preprocess_images_and_labels(
-        test_set)  # Corrected variable name from y_test to test_labels
+    # Preprocess the training, validation, and test sets
+    X_train, train_labels = preprocess_images_and_labels(train_set)
+    X_val, val_labels = preprocess_images_and_labels(
+        val_set)  # Process validation set
+    X_test, test_labels = preprocess_images_and_labels(test_set)
+
+    # Convert labels to one-hot encoded labels
     label_to_index = {'Rectangle': 0, 'Triangle': 1, 'Circle': 2, 'Cross': 3}
-    y_train = labels_to_one_hot(
-        train_labels,
-        label_to_index)  # Convert labels to one-hot encoded labels
-    y_test = labels_to_one_hot(
-        test_labels,
-        label_to_index)  # Convert labels to one-hot encoded labels
+    y_train = labels_to_one_hot(train_labels, label_to_index)
+    y_val = labels_to_one_hot(val_labels,
+                              label_to_index)  # Convert validation labels
+    y_test = labels_to_one_hot(test_labels, label_to_index)
 
-    # Train the network
-    network.fit(X_train,
-                y_train,
-                epochs=config['globals']['epochs'],
-                learning_rate=config['globals']['learning_rate'],
-                batch_size=config['globals']['batch_size'],
-                verbose=True)
-    
-    network.plot_training_progress()
+    # Train the network with validation data
+    network.fit(
+        X_train,
+        y_train,
+        X_val,
+        y_val,
+        epochs=config['globals']['epochs'],
+        learning_rate=config['globals']['learning_rate'],
+        batch_size=config['globals']['batch_size'],
+        verbose=True,
+    )  # Pass validation data
 
-    # Predict and plot
+    # Predict and plot results for the test set
     test_predictions = predict(network, X_test)
     plot_sample(X_test, y_test, test_predictions, {
         v: k
@@ -162,6 +169,11 @@ def main(config_path):
     }, n)
 
 
+    network.plot_training_progress()
+
+
 if __name__ == '__main__':
-    config_path = './scripts/config/neural_net_config.yml'
+    config_path = './scripts/config/config1.yml'
+    # config_path = './scripts/config/config2.yml'
+    # config_path = './scripts/config/config3.yml'
     main(config_path)

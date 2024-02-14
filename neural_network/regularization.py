@@ -14,4 +14,6 @@ class L1Regularizer(Regularizer):
         return self.rate * np.sign(weights)
     
 
-
+class L2Regularizer(Regularizer):
+    def grad(self, weights):
+        return self.rate * weights

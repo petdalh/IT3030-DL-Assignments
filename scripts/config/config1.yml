@@ -1,0 +1,42 @@
+globals:
+  learning_rate: 0.057
+  epochs: 40
+  batch_size: 12
+  loss_function: cross_entropy
+
+layers:
+  - input_size: 1600
+    output_size: 256
+    activation: relu
+    regularizer:
+      type: L2
+      rate: 0.002
+  - input_size: 256
+    output_size: 128
+    activation: sigmoid
+    regularizer:
+      type: L2
+      rate: 0.001
+  - input_size: 128
+    output_size: 64
+    activation: tanh
+    regularizer:
+      type: L2
+      rate: 0.001
+  - input_size: 64
+    output_size: 4
+    activation: linear
+    regularizer:
+      type: L2
+      rate: 0.001
+
+dataset:
+  type: image_generator
+  params:
+    n: 40
+    noise: 0.01
+    num_images: 3000
+    width_range: [10, 20]
+    height_range: [10, 20]
+    train_ratio: 0.7
+    val_ratio: 0.2
