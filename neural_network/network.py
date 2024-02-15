@@ -2,6 +2,7 @@ from .layer import Layer
 from .loss_functions import CrossEntropyLoss, MSELoss
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 class NeuralNetwork:
@@ -22,7 +23,6 @@ class NeuralNetwork:
         for layer in self.layers:
             inputs = layer.forward_pass(
                 inputs)  # Use the output of the forward pass
-            print(inputs)
         return inputs
 
     def backward(self, dvalues):
@@ -61,8 +61,10 @@ class NeuralNetwork:
                 loss, dloss = self.compute_loss_and_gradient(output, y_batch)
                 self.backward(dloss)
                 self.update_params(learning_rate)
-
                 epoch_losses.append(loss)
+
+                for layer in self.layers:
+                    layer.save_activations()
 
             avg_epoch_loss = np.mean(epoch_losses)
 
@@ -79,6 +81,33 @@ class NeuralNetwork:
             # Optionally, store the average loss and validation loss for later analysis
             self.losses.append(avg_epoch_loss)
             self.val_losses.append(val_loss)
+
+    def plot_activations_over_time(self):
+        n_layers = len(self.layers)
+        for layer_index, layer in enumerate(self.layers):
+            # Initialize a large matrix to hold activations for all epochs
+            # Assuming all activations have the same size, get the number of neurons from the first epoch
+            num_neurons = layer.all_activations[0].shape[
+                1]  # Number of neurons in the layer
+            epochs = len(layer.all_activations)
+
+            # Prepare the data matrix: epochs x neurons
+            activations_matrix = np.zeros((epochs, num_neurons))
+
+            for epoch in range(epochs):
+                activations = layer.all_activations[epoch]
+                avg_activations = np.mean(
+                    activations, axis=0
+                )  # You might use average or just collect activations directly
+                activations_matrix[epoch, :] = avg_activations
+
+            # Use seaborn to plot the heatmap
+            plt.figure(figsize=(10, 8))
+            sns.heatmap(activations_matrix, cmap="viridis", cbar=True)
+            plt.title(f'Layer {layer_index + 1} Activations Over Time')
+            plt.xlabel('Neuron')
+            plt.ylabel('Epoch')
+            plt.show()
 
     def plot_training_progress(self):
         plt.plot(self.losses, label="Loss")

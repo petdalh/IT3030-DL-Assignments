@@ -12,6 +12,7 @@ class Layer:
         self.biases = np.zeros(output_size)
         self.activation = activation
         self.regularizer = regularizer
+        self.all_activations = []
 
     def forward_pass(self, inputs):
         """
@@ -19,6 +20,7 @@ class Layer:
         """
         self.inputs = inputs
         self.output = np.dot(inputs, self.weights) + self.biases
+        self.activations = self.output  # Current activations
 
         return self.activation.apply(self.output)
 
@@ -48,6 +50,9 @@ class Layer:
         # Gradient on the input values for next layer in backpropagation
         self.dinputs = np.dot(dvalues, self.weights.T)
         return self.dinputs
+
+    def save_activations(self):
+        self.all_activations.append(self.activations.copy())
 
     def update_params(self, learning_rate):
         self.weights -= learning_rate * self.dweights

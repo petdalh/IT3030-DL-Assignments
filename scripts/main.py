@@ -15,6 +15,7 @@ from generator import ImageGenerator
 import matplotlib.pyplot as plt
 
 
+
 # Preprocess function to separate images from labels
 def preprocess_images_and_labels(image_label_pairs):
     images = np.array(
@@ -168,12 +169,17 @@ def main(config_path):
         for k, v in label_to_index.items()
     }, n)
 
-
     network.plot_training_progress()
+    for layers in network.layers:
+        print(layers.activations)
+
+    network.plot_activations_over_time()
+        
+        
 
 
 if __name__ == '__main__':
-    config_path = './scripts/config/config1.yml'
-    # config_path = './scripts/config/config2.yml'
+    # config_path = './scripts/config/config1.yml'
+    config_path = './scripts/config/config2.yml'
     # config_path = './scripts/config/config3.yml'
     main(config_path)
